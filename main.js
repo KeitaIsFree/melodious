@@ -1,3 +1,4 @@
+
 const { app, BrowserWindow } = require('electron')
 
 function createWindow () {
@@ -25,3 +26,4 @@ app.on('activate', () => {
     createWindow()
   }
 })
+
