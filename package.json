@@ -14,7 +14,5 @@
     "electron": "^11.2.1",
     "electron-rebuild": "^2.3.4"
   },
-  "dependencies": {
-    "tone": "^14.7.77"
-  }
+  "dependencies": {}
 }
