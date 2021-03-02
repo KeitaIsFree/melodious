@@ -1,5 +1,6 @@
 build/intermediate/Debug/Main_90ebc5c2.o: ../../Source/Main.cpp \
  ../../JuceLibraryCode/JuceHeader.h \
+ /home/roy/JUCE/modules/juce_audio_basics/juce_audio_basics.h \
  /home/roy/JUCE/modules/juce_core/juce_core.h \
  /home/roy/JUCE/modules/juce_core/system/juce_TargetPlatform.h \
  /home/roy/JUCE/modules/juce_core/system/juce_StandardHeader.h \
@@ -120,7 +121,46 @@ build/intermediate/Debug/Main_90ebc5c2.o: ../../Source/Main.cpp \
  /home/roy/JUCE/modules/juce_core/containers/juce_PropertySet.h \
  /home/roy/JUCE/modules/juce_core/memory/juce_SharedResourcePointer.h \
  /home/roy/JUCE/modules/juce_core/memory/juce_AllocationHooks.h \
- /home/roy/JUCE/modules/juce_data_structures/juce_data_structures.h \
+ /home/roy/JUCE/modules/juce_audio_basics/buffers/juce_AudioDataConverters.h \
+ /home/roy/JUCE/modules/juce_audio_basics/buffers/juce_FloatVectorOperations.h \
+ /home/roy/JUCE/modules/juce_audio_basics/buffers/juce_AudioSampleBuffer.h \
+ /home/roy/JUCE/modules/juce_audio_basics/buffers/juce_AudioChannelSet.h \
+ /home/roy/JUCE/modules/juce_audio_basics/buffers/juce_AudioProcessLoadMeasurer.h \
+ /home/roy/JUCE/modules/juce_audio_basics/utilities/juce_Decibels.h \
+ /home/roy/JUCE/modules/juce_audio_basics/utilities/juce_IIRFilter.h \
+ /home/roy/JUCE/modules/juce_audio_basics/utilities/juce_GenericInterpolator.h \
+ /home/roy/JUCE/modules/juce_audio_basics/utilities/juce_Interpolators.h \
+ /home/roy/JUCE/modules/juce_audio_basics/utilities/juce_SmoothedValue.h \
+ /home/roy/JUCE/modules/juce_audio_basics/utilities/juce_Reverb.h \
+ /home/roy/JUCE/modules/juce_audio_basics/utilities/juce_ADSR.h \
+ /home/roy/JUCE/modules/juce_audio_basics/midi/juce_MidiMessage.h \
+ /home/roy/JUCE/modules/juce_audio_basics/midi/juce_MidiBuffer.h \
+ /home/roy/JUCE/modules/juce_audio_basics/midi/juce_MidiMessageSequence.h \
+ /home/roy/JUCE/modules/juce_audio_basics/midi/juce_MidiFile.h \
+ /home/roy/JUCE/modules/juce_audio_basics/midi/juce_MidiKeyboardState.h \
+ /home/roy/JUCE/modules/juce_audio_basics/midi/juce_MidiRPN.h \
+ /home/roy/JUCE/modules/juce_audio_basics/mpe/juce_MPEValue.h \
+ /home/roy/JUCE/modules/juce_audio_basics/mpe/juce_MPENote.h \
+ /home/roy/JUCE/modules/juce_audio_basics/mpe/juce_MPEZoneLayout.h \
+ /home/roy/JUCE/modules/juce_audio_basics/mpe/juce_MPEInstrument.h \
+ /home/roy/JUCE/modules/juce_audio_basics/mpe/juce_MPEMessages.h \
+ /home/roy/JUCE/modules/juce_audio_basics/mpe/juce_MPESynthesiserBase.h \
+ /home/roy/JUCE/modules/juce_audio_basics/mpe/juce_MPESynthesiserVoice.h \
+ /home/roy/JUCE/modules/juce_audio_basics/mpe/juce_MPESynthesiser.h \
+ /home/roy/JUCE/modules/juce_audio_basics/mpe/juce_MPEUtils.h \
+ /home/roy/JUCE/modules/juce_audio_basics/sources/juce_AudioSource.h \
+ /home/roy/JUCE/modules/juce_audio_basics/sources/juce_PositionableAudioSource.h \
+ /home/roy/JUCE/modules/juce_audio_basics/sources/juce_BufferingAudioSource.h \
+ /home/roy/JUCE/modules/juce_audio_basics/sources/juce_ChannelRemappingAudioSource.h \
+ /home/roy/JUCE/modules/juce_audio_basics/sources/juce_IIRFilterAudioSource.h \
+ /home/roy/JUCE/modules/juce_audio_basics/sources/juce_MemoryAudioSource.h \
+ /home/roy/JUCE/modules/juce_audio_basics/sources/juce_MixerAudioSource.h \
+ /home/roy/JUCE/modules/juce_audio_basics/sources/juce_ResamplingAudioSource.h \
+ /home/roy/JUCE/modules/juce_audio_basics/sources/juce_ReverbAudioSource.h \
+ /home/roy/JUCE/modules/juce_audio_basics/sources/juce_ToneGeneratorAudioSource.h \
+ /home/roy/JUCE/modules/juce_audio_basics/synthesisers/juce_Synthesiser.h \
+ /home/roy/JUCE/modules/juce_audio_basics/audio_play_head/juce_AudioPlayHead.h \
+ /home/roy/JUCE/modules/juce_audio_devices/juce_audio_devices.h \
  /home/roy/JUCE/modules/juce_events/juce_events.h \
  /home/roy/JUCE/modules/juce_events/messages/juce_MessageManager.h \
  /home/roy/JUCE/modules/juce_events/messages/juce_Message.h \
@@ -143,15 +183,6 @@ build/intermediate/Debug/Main_90ebc5c2.o: ../../Source/Main.cpp \
  /home/roy/JUCE/modules/juce_events/interprocess/juce_ConnectedChildProcess.h \
  /home/roy/JUCE/modules/juce_events/interprocess/juce_NetworkServiceDiscovery.h \
  /home/roy/JUCE/modules/juce_events/native/juce_linux_EventLoop.h \
- /home/roy/JUCE/modules/juce_data_structures/undomanager/juce_UndoableAction.h \
- /home/roy/JUCE/modules/juce_data_structures/undomanager/juce_UndoManager.h \
- /home/roy/JUCE/modules/juce_data_structures/values/juce_Value.h \
- /home/roy/JUCE/modules/juce_data_structures/values/juce_ValueTree.h \
- /home/roy/JUCE/modules/juce_data_structures/values/juce_ValueTreeSynchroniser.h \
- /home/roy/JUCE/modules/juce_data_structures/values/juce_CachedValue.h \
- /home/roy/JUCE/modules/juce_data_structures/values/juce_ValueWithDefault.h \
- /home/roy/JUCE/modules/juce_data_structures/app_properties/juce_PropertiesFile.h \
- /home/roy/JUCE/modules/juce_data_structures/app_properties/juce_ApplicationProperties.h \
  /home/roy/JUCE/modules/juce_graphics/juce_graphics.h \
  /home/roy/JUCE/modules/juce_graphics/geometry/juce_AffineTransform.h \
  /home/roy/JUCE/modules/juce_graphics/geometry/juce_Point.h \
@@ -189,7 +220,44 @@ build/intermediate/Debug/Main_90ebc5c2.o: ../../Source/Main.cpp \
  /home/roy/JUCE/modules/juce_graphics/effects/juce_ImageEffectFilter.h \
  /home/roy/JUCE/modules/juce_graphics/effects/juce_DropShadowEffect.h \
  /home/roy/JUCE/modules/juce_graphics/effects/juce_GlowEffect.h \
+ /home/roy/JUCE/modules/juce_audio_devices/midi_io/juce_MidiDevices.h \
+ /home/roy/JUCE/modules/juce_audio_devices/midi_io/juce_MidiMessageCollector.h \
+ /home/roy/JUCE/modules/juce_audio_devices/audio_io/juce_AudioIODevice.h \
+ /home/roy/JUCE/modules/juce_audio_devices/audio_io/juce_AudioIODeviceType.h \
+ /home/roy/JUCE/modules/juce_audio_devices/audio_io/juce_SystemAudioVolume.h \
+ /home/roy/JUCE/modules/juce_audio_devices/sources/juce_AudioSourcePlayer.h \
+ /home/roy/JUCE/modules/juce_audio_devices/sources/juce_AudioTransportSource.h \
+ /home/roy/JUCE/modules/juce_audio_devices/audio_io/juce_AudioDeviceManager.h \
+ /home/roy/JUCE/modules/juce_audio_formats/juce_audio_formats.h \
+ /home/roy/JUCE/modules/juce_audio_formats/format/juce_AudioFormatReader.h \
+ /home/roy/JUCE/modules/juce_audio_formats/format/juce_AudioFormatWriter.h \
+ /home/roy/JUCE/modules/juce_audio_formats/format/juce_MemoryMappedAudioFormatReader.h \
+ /home/roy/JUCE/modules/juce_audio_formats/format/juce_AudioFormat.h \
+ /home/roy/JUCE/modules/juce_audio_formats/format/juce_AudioFormatManager.h \
+ /home/roy/JUCE/modules/juce_audio_formats/format/juce_AudioFormatReaderSource.h \
+ /home/roy/JUCE/modules/juce_audio_formats/format/juce_AudioSubsectionReader.h \
+ /home/roy/JUCE/modules/juce_audio_formats/format/juce_BufferingAudioFormatReader.h \
+ /home/roy/JUCE/modules/juce_audio_formats/codecs/juce_AiffAudioFormat.h \
+ /home/roy/JUCE/modules/juce_audio_formats/codecs/juce_CoreAudioFormat.h \
+ /home/roy/JUCE/modules/juce_audio_formats/codecs/juce_FlacAudioFormat.h \
+ /home/roy/JUCE/modules/juce_audio_formats/codecs/juce_LAMEEncoderAudioFormat.h \
+ /home/roy/JUCE/modules/juce_audio_formats/codecs/juce_MP3AudioFormat.h \
+ /home/roy/JUCE/modules/juce_audio_formats/codecs/juce_OggVorbisAudioFormat.h \
+ /home/roy/JUCE/modules/juce_audio_formats/codecs/juce_WavAudioFormat.h \
+ /home/roy/JUCE/modules/juce_audio_formats/codecs/juce_WindowsMediaAudioFormat.h \
+ /home/roy/JUCE/modules/juce_audio_formats/sampler/juce_Sampler.h \
+ /home/roy/JUCE/modules/juce_audio_processors/juce_audio_processors.h \
  /home/roy/JUCE/modules/juce_gui_basics/juce_gui_basics.h \
+ /home/roy/JUCE/modules/juce_data_structures/juce_data_structures.h \
+ /home/roy/JUCE/modules/juce_data_structures/undomanager/juce_UndoableAction.h \
+ /home/roy/JUCE/modules/juce_data_structures/undomanager/juce_UndoManager.h \
+ /home/roy/JUCE/modules/juce_data_structures/values/juce_Value.h \
+ /home/roy/JUCE/modules/juce_data_structures/values/juce_ValueTree.h \
+ /home/roy/JUCE/modules/juce_data_structures/values/juce_ValueTreeSynchroniser.h \
+ /home/roy/JUCE/modules/juce_data_structures/values/juce_CachedValue.h \
+ /home/roy/JUCE/modules/juce_data_structures/values/juce_ValueWithDefault.h \
+ /home/roy/JUCE/modules/juce_data_structures/app_properties/juce_PropertiesFile.h \
+ /home/roy/JUCE/modules/juce_data_structures/app_properties/juce_ApplicationProperties.h \
  /home/roy/JUCE/modules/juce_gui_basics/mouse/juce_MouseCursor.h \
  /home/roy/JUCE/modules/juce_gui_basics/mouse/juce_MouseListener.h \
  /home/roy/JUCE/modules/juce_gui_basics/keyboard/juce_ModifierKeys.h \
@@ -327,4 +395,72 @@ build/intermediate/Debug/Main_90ebc5c2.o: ../../Source/Main.cpp \
  /home/roy/JUCE/modules/juce_gui_basics/layout/juce_FlexBox.h \
  /home/roy/JUCE/modules/juce_gui_basics/layout/juce_GridItem.h \
  /home/roy/JUCE/modules/juce_gui_basics/layout/juce_Grid.h \
+ /home/roy/JUCE/modules/juce_audio_processors/processors/juce_AudioProcessorEditor.h \
+ /home/roy/JUCE/modules/juce_audio_processors/processors/juce_AudioProcessorListener.h \
+ /home/roy/JUCE/modules/juce_audio_processors/processors/juce_AudioProcessorParameter.h \
+ /home/roy/JUCE/modules/juce_audio_processors/processors/juce_AudioProcessorParameterGroup.h \
+ /home/roy/JUCE/modules/juce_audio_processors/processors/juce_AudioProcessor.h \
+ /home/roy/JUCE/modules/juce_audio_processors/processors/juce_PluginDescription.h \
+ /home/roy/JUCE/modules/juce_audio_processors/processors/juce_AudioPluginInstance.h \
+ /home/roy/JUCE/modules/juce_audio_processors/processors/juce_AudioProcessorGraph.h \
+ /home/roy/JUCE/modules/juce_audio_processors/processors/juce_GenericAudioProcessorEditor.h \
+ /home/roy/JUCE/modules/juce_audio_processors/format/juce_AudioPluginFormat.h \
+ /home/roy/JUCE/modules/juce_audio_processors/format/juce_AudioPluginFormatManager.h \
+ /home/roy/JUCE/modules/juce_audio_processors/scanning/juce_KnownPluginList.h \
+ /home/roy/JUCE/modules/juce_audio_processors/format_types/juce_AudioUnitPluginFormat.h \
+ /home/roy/JUCE/modules/juce_audio_processors/format_types/juce_LADSPAPluginFormat.h \
+ /home/roy/JUCE/modules/juce_audio_processors/format_types/juce_VSTMidiEventList.h \
+ /home/roy/JUCE/modules/juce_audio_processors/format_types/juce_VSTPluginFormat.h \
+ /home/roy/JUCE/modules/juce_audio_processors/format_types/juce_VST3PluginFormat.h \
+ /home/roy/JUCE/modules/juce_audio_processors/scanning/juce_PluginDirectoryScanner.h \
+ /home/roy/JUCE/modules/juce_audio_processors/scanning/juce_PluginListComponent.h \
+ /home/roy/JUCE/modules/juce_audio_processors/utilities/juce_AudioProcessorParameterWithID.h \
+ /home/roy/JUCE/modules/juce_audio_processors/utilities/juce_RangedAudioParameter.h \
+ /home/roy/JUCE/modules/juce_audio_processors/utilities/juce_AudioParameterFloat.h \
+ /home/roy/JUCE/modules/juce_audio_processors/utilities/juce_AudioParameterInt.h \
+ /home/roy/JUCE/modules/juce_audio_processors/utilities/juce_AudioParameterBool.h \
+ /home/roy/JUCE/modules/juce_audio_processors/utilities/juce_AudioParameterChoice.h \
+ /home/roy/JUCE/modules/juce_audio_processors/utilities/juce_ParameterAttachments.h \
+ /home/roy/JUCE/modules/juce_audio_processors/utilities/juce_AudioProcessorValueTreeState.h \
+ /home/roy/JUCE/modules/juce_audio_utils/juce_audio_utils.h \
+ /home/roy/JUCE/modules/juce_audio_utils/gui/juce_AudioDeviceSelectorComponent.h \
+ /home/roy/JUCE/modules/juce_audio_utils/gui/juce_AudioThumbnailBase.h \
+ /home/roy/JUCE/modules/juce_audio_utils/gui/juce_AudioThumbnail.h \
+ /home/roy/JUCE/modules/juce_audio_utils/gui/juce_AudioThumbnailCache.h \
+ /home/roy/JUCE/modules/juce_audio_utils/gui/juce_AudioVisualiserComponent.h \
+ /home/roy/JUCE/modules/juce_audio_utils/gui/juce_MidiKeyboardComponent.h \
+ /home/roy/JUCE/modules/juce_audio_utils/gui/juce_AudioAppComponent.h \
+ /home/roy/JUCE/modules/juce_audio_utils/gui/juce_BluetoothMidiDevicePairingDialogue.h \
+ /home/roy/JUCE/modules/juce_audio_utils/players/juce_SoundPlayer.h \
+ /home/roy/JUCE/modules/juce_audio_utils/players/juce_AudioProcessorPlayer.h \
+ /home/roy/JUCE/modules/juce_audio_utils/audio_cd/juce_AudioCDBurner.h \
+ /home/roy/JUCE/modules/juce_audio_utils/audio_cd/juce_AudioCDReader.h \
+ /home/roy/JUCE/modules/juce_gui_extra/juce_gui_extra.h \
+ /home/roy/JUCE/modules/juce_gui_extra/documents/juce_FileBasedDocument.h \
+ /home/roy/JUCE/modules/juce_gui_extra/code_editor/juce_CodeDocument.h \
+ /home/roy/JUCE/modules/juce_gui_extra/code_editor/juce_CodeEditorComponent.h \
+ /home/roy/JUCE/modules/juce_gui_extra/code_editor/juce_CodeTokeniser.h \
+ /home/roy/JUCE/modules/juce_gui_extra/code_editor/juce_CPlusPlusCodeTokeniser.h \
+ /home/roy/JUCE/modules/juce_gui_extra/code_editor/juce_CPlusPlusCodeTokeniserFunctions.h \
+ /home/roy/JUCE/modules/juce_gui_extra/code_editor/juce_XMLCodeTokeniser.h \
+ /home/roy/JUCE/modules/juce_gui_extra/code_editor/juce_LuaCodeTokeniser.h \
+ /home/roy/JUCE/modules/juce_gui_extra/embedding/juce_ActiveXControlComponent.h \
+ /home/roy/JUCE/modules/juce_gui_extra/embedding/juce_AndroidViewComponent.h \
+ /home/roy/JUCE/modules/juce_gui_extra/embedding/juce_NSViewComponent.h \
+ /home/roy/JUCE/modules/juce_gui_extra/embedding/juce_UIViewComponent.h \
+ /home/roy/JUCE/modules/juce_gui_extra/embedding/juce_XEmbedComponent.h \
+ /home/roy/JUCE/modules/juce_gui_extra/embedding/juce_ScopedDPIAwarenessDisabler.h \
+ /home/roy/JUCE/modules/juce_gui_extra/embedding/juce_HWNDComponent.h \
+ /home/roy/JUCE/modules/juce_gui_extra/misc/juce_AppleRemote.h \
+ /home/roy/JUCE/modules/juce_gui_extra/misc/juce_BubbleMessageComponent.h \
+ /home/roy/JUCE/modules/juce_gui_extra/misc/juce_ColourSelector.h \
+ /home/roy/JUCE/modules/juce_gui_extra/misc/juce_KeyMappingEditorComponent.h \
+ /home/roy/JUCE/modules/juce_gui_extra/misc/juce_PreferencesPanel.h \
+ /home/roy/JUCE/modules/juce_gui_extra/misc/juce_PushNotifications.h \
+ /home/roy/JUCE/modules/juce_gui_extra/misc/juce_RecentlyOpenedFilesList.h \
+ /home/roy/JUCE/modules/juce_gui_extra/misc/juce_SplashScreen.h \
+ /home/roy/JUCE/modules/juce_gui_extra/misc/juce_SystemTrayIconComponent.h \
+ /home/roy/JUCE/modules/juce_gui_extra/misc/juce_WebBrowserComponent.h \
+ /home/roy/JUCE/modules/juce_gui_extra/misc/juce_LiveConstantEditor.h \
+ /home/roy/JUCE/modules/juce_gui_extra/misc/juce_AnimatedAppComponent.h \
  ../../Source/MainComponent.h
