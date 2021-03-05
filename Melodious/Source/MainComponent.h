@@ -109,10 +109,10 @@ private:
 };
 
 //==============================================================================
-class SynthAudioSource   : public juce::AudioSource
+class LooperAudioSource   : public juce::AudioSource
 {
 public:
-  SynthAudioSource (juce::MidiKeyboardState& keyState)
+  LooperAudioSource (juce::MidiKeyboardState& keyState)
 	: keyboardState (keyState)
   {
 	createWavetable();
@@ -145,39 +145,57 @@ public:
 	samples[tableSize] = samples[0];
   }
 
-  void setupLoop(double spl) {
-	samplePerLoop = spl;
+  void setupPhrase () {
+	auto one12thNote = std::floor(samplesPerLoop / 12 / 2);
+	phraseBuffer.addEvent (juce::MidiMessage::noteOn (1, 67, 1.0f), 0);
+	phraseBuffer.addEvent (juce::MidiMessage::noteOff (1, 67), one12thNote * 2 - 1);
+	phraseBuffer.addEvent (juce::MidiMessage::noteOn (1, 69, 1.0f), one12thNote * 2);
+	phraseBuffer.addEvent (juce::MidiMessage::noteOff (1, 69), one12thNote * 3 - 1);
+	phraseBuffer.addEvent (juce::MidiMessage::noteOn (1, 70, 1.0f), one12thNote * 3);
+	phraseBuffer.addEvent (juce::MidiMessage::noteOff (1, 70), one12thNote * 5 - 1);
+	phraseBuffer.addEvent (juce::MidiMessage::noteOn (1, 72, 1.0f), one12thNote * 5);
+	phraseBuffer.addEvent (juce::MidiMessage::noteOff (1, 72), one12thNote * 6 - 1);
+	phraseBuffer.addEvent (juce::MidiMessage::noteOn (1, 69, 1.0f), one12thNote * 6);
+	phraseBuffer.addEvent (juce::MidiMessage::noteOff (1, 69), one12thNote * 9 - 1);
+	phraseBuffer.addEvent (juce::MidiMessage::noteOn (1, 65, 1.0f), one12thNote * 9);
+	phraseBuffer.addEvent (juce::MidiMessage::noteOff (1, 65), one12thNote * 11 - 1);
+	phraseBuffer.addEvent (juce::MidiMessage::noteOn (1, 67, 1.0f), one12thNote * 11);
+	phraseBuffer.addEvent (juce::MidiMessage::noteOff (1, 67), one12thNote *12 - 1);
+  }
+  
+  void setupRythmSection (double spl) {
+	samplesPerLoop = spl;
 	for (int i = 0; i < 2; i++) {
-	  // scriptedMidiEvents.addEvent(juce::MidiMessage::noteOn(0, 53, 1.0f), i*samplePerLoop);
-	  // scriptedMidiEvents.addEvent(juce::MidiMessage::noteOff(0, 53), std::floor(samplePerLoop/4) + i*samplePerLoop);
-	  // scriptedMidiEvents.addEvent(juce::MidiMessage::noteOn(0, 53, 1.0f), std::floor(samplePerLoop*3/8) + i*samplePerLoop);
-	  // scriptedMidiEvents.addEvent(juce::MidiMessage::noteOff(0, 53), std::floor(samplePerLoop/2) + i*samplePerLoop - 512);
-	  // scriptedMidiEvents.addEvent(juce::MidiMessage::noteOn(0, 60, 1.0f), std::floor(samplePerLoop/2) + i*samplePerLoop);
-	  // scriptedMidiEvents.addEvent(juce::MidiMessage::noteOff(0, 60), std::floor(samplePerLoop*3/4) + i*samplePerLoop);
-	  // scriptedMidiEvents.addEvent(juce::MidiMessage::noteOn(0, 60, 1.0f), std::floor(samplePerLoop*7/8) + i*samplePerLoop);
-	  // scriptedMidiEvents.addEvent(juce::MidiMessage::noteOff(0, 60), std::floor(samplePerLoop) + i*samplePerLoop - 512);
-	  scriptedMidiEvents.addEvent(juce::MidiMessage::noteOn(0, 59, 1.0f), i * samplePerLoop);
-	  scriptedMidiEvents.addEvent(juce::MidiMessage::noteOn(0, 53, 1.0f), i * samplePerLoop + 1);
-	  scriptedMidiEvents.addEvent(juce::MidiMessage::noteOn(0, 43, 1.0f), i * samplePerLoop + 2);
-	  scriptedMidiEvents.addEvent(juce::MidiMessage::noteOff(0, 59), std::floor(samplePerLoop*5/24) + i * samplePerLoop - 1);
-	  scriptedMidiEvents.addEvent(juce::MidiMessage::noteOff(0, 53), std::floor(samplePerLoop*5/24) + i * samplePerLoop - 2);
-	  scriptedMidiEvents.addEvent(juce::MidiMessage::noteOff(0, 43), std::floor(samplePerLoop*5/24) + i * samplePerLoop - 3);
-	  scriptedMidiEvents.addEvent(juce::MidiMessage::noteOn(0, 31, 1.0f), std::floor(samplePerLoop*5/24) + i * samplePerLoop);
-	  scriptedMidiEvents.addEvent(juce::MidiMessage::noteOff(0, 31), std::floor(samplePerLoop*1/4) + i * samplePerLoop - 1);
-	  scriptedMidiEvents.addEvent(juce::MidiMessage::noteOn(0, 43, 1.0f), std::floor(samplePerLoop*1/2) + i * samplePerLoop);
-	  scriptedMidiEvents.addEvent(juce::MidiMessage::noteOff(0, 43), std::floor(samplePerLoop*17/24) + i * samplePerLoop - 1);
-	  scriptedMidiEvents.addEvent(juce::MidiMessage::noteOn(0, 31, 1.0f), std::floor(samplePerLoop*17/24) + i * samplePerLoop);
-	  scriptedMidiEvents.addEvent(juce::MidiMessage::noteOff(0, 31), std::floor(samplePerLoop*3/4) + i * samplePerLoop - 1);
-	  scriptedMidiEvents.addEvent(juce::MidiMessage::noteOn(0, 36, 1.0f), std::floor(samplePerLoop*20/24) + i * samplePerLoop);
-	  scriptedMidiEvents.addEvent(juce::MidiMessage::noteOff(0, 36), std::floor(samplePerLoop*7/8) + i * samplePerLoop - 1);
-	  scriptedMidiEvents.addEvent(juce::MidiMessage::noteOn(0, 37, 1.0f), std::floor(samplePerLoop*7/8) + i * samplePerLoop);
-	  scriptedMidiEvents.addEvent(juce::MidiMessage::noteOff(0, 37), std::floor(samplePerLoop*23/24) + i * samplePerLoop - 1);
-	  scriptedMidiEvents.addEvent(juce::MidiMessage::noteOn(0, 38, 1.0f), std::floor(samplePerLoop*23/24) + i * samplePerLoop);
-	  scriptedMidiEvents.addEvent(juce::MidiMessage::noteOff(0, 38), (i+1) * samplePerLoop - 1);
-	  scriptedMidiEvents.addEvent(juce::MidiMessage::noteOn(0, 54, 1.0f), std::floor(samplePerLoop*23/24) + i * samplePerLoop + 1);
-	  scriptedMidiEvents.addEvent(juce::MidiMessage::noteOff(0, 54), (i+1) * samplePerLoop - 2);
-	  scriptedMidiEvents.addEvent(juce::MidiMessage::noteOn(0, 58, 1.0f), std::floor(samplePerLoop*23/24) + i * samplePerLoop + 2);
-	  scriptedMidiEvents.addEvent(juce::MidiMessage::noteOff(0, 58), (i+1) * samplePerLoop - 3);
+	  // rythmSectionBuffer.addEvent(juce::MidiMessage::noteOn(0, 53, 1.0f), i*samplesPerLoop);
+	  // rythmSectionBuffer.addEvent(juce::MidiMessage::noteOff(0, 53), std::floor(samplesPerLoop/4) + i*samplesPerLoop);
+	  // rythmSectionBuffer.addEvent(juce::MidiMessage::noteOn(0, 53, 1.0f), std::floor(samplesPerLoop*3/8) + i*samplesPerLoop);
+	  // rythmSectionBuffer.addEvent(juce::MidiMessage::noteOff(0, 53), std::floor(samplesPerLoop/2) + i*samplesPerLoop - 512);
+	  // rythmSectionBuffer.addEvent(juce::MidiMessage::noteOn(0, 60, 1.0f), std::floor(samplesPerLoop/2) + i*samplesPerLoop);
+	  // rythmSectionBuffer.addEvent(juce::MidiMessage::noteOff(0, 60), std::floor(samplesPerLoop*3/4) + i*samplesPerLoop);
+	  // rythmSectionBuffer.addEvent(juce::MidiMessage::noteOn(0, 60, 1.0f), std::floor(samplesPerLoop*7/8) + i*samplesPerLoop);
+	  // rythmSectionBuffer.addEvent(juce::MidiMessage::noteOff(0, 60), std::floor(samplesPerLoop) + i*samplesPerLoop - 512);
+	  rythmSectionBuffer.addEvent(juce::MidiMessage::noteOn(0, 59, 1.0f), i * samplesPerLoop);
+	  rythmSectionBuffer.addEvent(juce::MidiMessage::noteOn(0, 53, 1.0f), i * samplesPerLoop + 1);
+	  rythmSectionBuffer.addEvent(juce::MidiMessage::noteOn(0, 43, 1.0f), i * samplesPerLoop + 2);
+	  rythmSectionBuffer.addEvent(juce::MidiMessage::noteOff(0, 59), std::floor(samplesPerLoop*5/24) + i * samplesPerLoop - 1);
+	  rythmSectionBuffer.addEvent(juce::MidiMessage::noteOff(0, 53), std::floor(samplesPerLoop*5/24) + i * samplesPerLoop - 2);
+	  rythmSectionBuffer.addEvent(juce::MidiMessage::noteOff(0, 43), std::floor(samplesPerLoop*5/24) + i * samplesPerLoop - 3);
+	  rythmSectionBuffer.addEvent(juce::MidiMessage::noteOn(0, 31, 1.0f), std::floor(samplesPerLoop*5/24) + i * samplesPerLoop);
+	  rythmSectionBuffer.addEvent(juce::MidiMessage::noteOff(0, 31), std::floor(samplesPerLoop*1/4) + i * samplesPerLoop - 1);
+	  rythmSectionBuffer.addEvent(juce::MidiMessage::noteOn(0, 43, 1.0f), std::floor(samplesPerLoop*1/2) + i * samplesPerLoop);
+	  rythmSectionBuffer.addEvent(juce::MidiMessage::noteOff(0, 43), std::floor(samplesPerLoop*17/24) + i * samplesPerLoop - 1);
+	  rythmSectionBuffer.addEvent(juce::MidiMessage::noteOn(0, 31, 1.0f), std::floor(samplesPerLoop*17/24) + i * samplesPerLoop);
+	  rythmSectionBuffer.addEvent(juce::MidiMessage::noteOff(0, 31), std::floor(samplesPerLoop*3/4) + i * samplesPerLoop - 1);
+	  rythmSectionBuffer.addEvent(juce::MidiMessage::noteOn(0, 36, 1.0f), std::floor(samplesPerLoop*20/24) + i * samplesPerLoop);
+	  rythmSectionBuffer.addEvent(juce::MidiMessage::noteOff(0, 36), std::floor(samplesPerLoop*7/8) + i * samplesPerLoop - 1);
+	  rythmSectionBuffer.addEvent(juce::MidiMessage::noteOn(0, 37, 1.0f), std::floor(samplesPerLoop*7/8) + i * samplesPerLoop);
+	  rythmSectionBuffer.addEvent(juce::MidiMessage::noteOff(0, 37), std::floor(samplesPerLoop*23/24) + i * samplesPerLoop - 1);
+	  rythmSectionBuffer.addEvent(juce::MidiMessage::noteOn(0, 38, 1.0f), std::floor(samplesPerLoop*23/24) + i * samplesPerLoop);
+	  rythmSectionBuffer.addEvent(juce::MidiMessage::noteOff(0, 38), (i+1) * samplesPerLoop - 1);
+	  rythmSectionBuffer.addEvent(juce::MidiMessage::noteOn(0, 54, 1.0f), std::floor(samplesPerLoop*23/24) + i * samplesPerLoop + 1);
+	  rythmSectionBuffer.addEvent(juce::MidiMessage::noteOff(0, 54), (i+1) * samplesPerLoop - 2);
+	  rythmSectionBuffer.addEvent(juce::MidiMessage::noteOn(0, 58, 1.0f), std::floor(samplesPerLoop*23/24) + i * samplesPerLoop + 2);
+	  rythmSectionBuffer.addEvent(juce::MidiMessage::noteOff(0, 58), (i+1) * samplesPerLoop - 3);
 	}
   }
 
@@ -185,7 +203,8 @@ public:
   {
 	synth.setCurrentPlaybackSampleRate (sampleRate); // [3]
 	midiCollector.reset (sampleRate);
-	setupLoop (sampleRate*5);	   
+	setupRythmSection (sampleRate*5);
+	setupPhrase();
   }
 
   void releaseResources() override {}
@@ -199,12 +218,13 @@ public:
 	keyboardState.processNextMidiBuffer (incomingMidi, bufferToFill.startSample,
 										 bufferToFill.numSamples, true);       // [4]
 	// Adding scripted midi events
-	incomingMidi.addEvents(scriptedMidiEvents, bufferToFill.numSamples*currentCycle % samplePerLoop, bufferToFill.numSamples, 0);
+	incomingMidi.addEvents(rythmSectionBuffer, bufferToFill.numSamples*currentCycle % samplesPerLoop, bufferToFill.numSamples, 0);
+	incomingMidi.addEvents (phraseBuffer, bufferToFill.numSamples*currentCycle % samplesPerLoop, bufferToFill.numSamples, 0);
 	synth.renderNextBlock (*bufferToFill.buffer, incomingMidi,
 						   bufferToFill.startSample, bufferToFill.numSamples); // [5]
 	currentCycle++;
-	if (currentCycle>=samplePerLoop)
-	  currentCycle -= samplePerLoop;
+	if (currentCycle>=samplesPerLoop)
+	  currentCycle -= samplesPerLoop;
   }
   juce::MidiMessageCollector* getMidiCollector()
   {
@@ -220,8 +240,8 @@ private:
   juce::Synthesiser synth;
   juce::MidiMessageCollector midiCollector;
   int currentCycle = 0;
-  juce::MidiBuffer scriptedMidiEvents;
-  int samplePerLoop;
+  juce::MidiBuffer rythmSectionBuffer, phraseBuffer, userInputBuffer;
+  int samplesPerLoop;
 };
 
 
@@ -255,7 +275,7 @@ private:
   //==============================================================================
   // Your private member variables go here...
   juce::MidiKeyboardState keyboardState;
-  SynthAudioSource synthAudioSource;
+  LooperAudioSource synthAudioSource;
   juce::MidiKeyboardComponent keyboardComponent;
 
   juce::ComboBox midiInputList;
