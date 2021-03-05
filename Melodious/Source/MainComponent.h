@@ -199,6 +199,63 @@ public:
 	}
   }
 
+  void evaluateGuess()
+  {
+	int samplesGotRight = 0;
+	int samplesInPhrase = 0;
+	juce::MidiBufferIterator phraseIterator = phraseBuffer.begin();
+	for (auto currentMidiMessageMetadata : phraseBuffer) {
+	  auto currentMidiEvent = (*phraseIterator).getMessage();
+	  // std::cout << "-------------------------------------\n";
+	  // std::cout << "currentMidiEvent: " << currentMidiEvent.getDescription() <<"\n";
+	  auto correctNote = (currentMidiEvent.isNoteOn())
+		? currentMidiEvent.getNoteNumber()
+		: 0;
+	  auto noteFrom = currentMidiEvent.getTimeStamp();
+	  auto noteTo = (*(++phraseIterator)).getMessage().getTimeStamp();
+	  std::cout << "Note duration is from " << noteFrom << " to " << noteTo << "\n";
+	  if (correctNote == 0)
+		continue;
+	  samplesInPhrase += noteTo - noteFrom;
+	  auto guessIterator = guessBuffer.findNextSamplePosition (noteFrom);
+	  for (auto currentGuessMidiMessageMetadata : guessBuffer) {
+		auto currentGuessMidiEvent = (*guessIterator).getMessage();
+		// std::cout << "currentGuessMidiEvent: " << currentGuessMidiEvent.getDescription() <<"\n";
+		if (noteTo < currentGuessMidiEvent.getTimeStamp()) {
+		  break;
+		}
+		if (!currentGuessMidiEvent.isNoteOn()
+			|| currentGuessMidiEvent.getNoteNumber() != correctNote) {
+		  ++guessIterator;
+		  continue;
+		}
+		// TODO: handle events other than noteOn/noteOff
+		auto nextGuessMidiEvent = (*(++guessIterator)).getMessage();
+		// std::cout << "Note duration is from " << currentGuessMidiEvent.getTimeStamp() << " to " << nextGuessMidiEvent.getTimeStamp() << "\n";
+		if (nextGuessMidiEvent.isNoteOff()) {
+		  if (noteTo > nextGuessMidiEvent.getTimeStamp()) {
+			samplesGotRight += nextGuessMidiEvent.getTimeStamp() - currentGuessMidiEvent.getTimeStamp();
+			++guessIterator;
+			continue;
+		  } else {
+			samplesGotRight += noteTo - currentGuessMidiEvent.getTimeStamp();
+			break;
+		  }
+		} else {
+		  if (noteTo > nextGuessMidiEvent.getTimeStamp()) {
+			samplesGotRight += nextGuessMidiEvent.getTimeStamp() - currentGuessMidiEvent.getTimeStamp();
+			continue;
+		  } else {
+			samplesGotRight += noteTo - currentGuessMidiEvent.getTimeStamp();
+			break;
+		  }
+		}
+			
+	  }
+	}
+	std::cout << "You got " << samplesGotRight << " out of "<< samplesInPhrase << " samples right this loop. (" << 100*samplesGotRight/samplesInPhrase << "%)\n";
+  }
+
   void prepareToPlay (int /*samplesPerBlockExpected*/, double sampleRate) override
   {
 	synth.setCurrentPlaybackSampleRate (sampleRate); // [3]
@@ -218,7 +275,7 @@ public:
 	midiCollector.removeNextBlockOfMessages (incomingMidi, bufferToFill.numSamples);
 	keyboardState.processNextMidiBuffer (incomingMidi, bufferToFill.startSample,
 										 bufferToFill.numSamples, true);       // [4]
-	guessBuffer.addEvents (incomingMidi, 0, bufferToFill.numSamples, currentCyclePos);
+	
 	// Adding scripted midi events
 	incomingMidi.addEvents(rythmSectionBuffer, currentCyclePos, bufferToFill.numSamples, 0);
 	switch (currentPhase) {
@@ -227,6 +284,7 @@ public:
 	  break;
 	case 2:
 	  // std::cout << "Listening... (currentPhase: 1)\n";
+	  guessBuffer.addEvents (incomingMidi, 0, bufferToFill.numSamples, currentCyclePos);
 	  break;
 	default:
 	  // std::cout << "Waiting... (currentPhase: 0)\n";
@@ -243,7 +301,7 @@ public:
 		else
 		  {
 			currentPhase = 1;
-			std::cout << "Number of events in guessBuffer: " << guessBuffer.getNumEvents() << "\n";
+			evaluateGuess();
 			guessBuffer.clear();
 		  }
 	  }
