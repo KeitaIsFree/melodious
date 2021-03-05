@@ -211,21 +211,44 @@ public:
 
   void getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferToFill) override
   {
+	// std::cout << currentPhase << "\n";
 	bufferToFill.clearActiveBufferRegion();
 
 	juce::MidiBuffer incomingMidi;
 	midiCollector.removeNextBlockOfMessages (incomingMidi, bufferToFill.numSamples);
 	keyboardState.processNextMidiBuffer (incomingMidi, bufferToFill.startSample,
 										 bufferToFill.numSamples, true);       // [4]
+	guessBuffer.addEvents (incomingMidi, 0, bufferToFill.numSamples, currentCyclePos);
 	// Adding scripted midi events
-	incomingMidi.addEvents(rythmSectionBuffer, bufferToFill.numSamples*currentCycle % samplesPerLoop, bufferToFill.numSamples, 0);
-	incomingMidi.addEvents (phraseBuffer, bufferToFill.numSamples*currentCycle % samplesPerLoop, bufferToFill.numSamples, 0);
+	incomingMidi.addEvents(rythmSectionBuffer, currentCyclePos, bufferToFill.numSamples, 0);
+	switch (currentPhase) {
+	case 1: 
+	  incomingMidi.addEvents (phraseBuffer, currentCyclePos, bufferToFill.numSamples, 0);
+	  break;
+	case 2:
+	  // std::cout << "Listening... (currentPhase: 1)\n";
+	  break;
+	default:
+	  // std::cout << "Waiting... (currentPhase: 0)\n";
+	  break;
+	}
 	synth.renderNextBlock (*bufferToFill.buffer, incomingMidi,
 						   bufferToFill.startSample, bufferToFill.numSamples); // [5]
-	currentCycle++;
-	if (currentCycle>=samplesPerLoop)
-	  currentCycle -= samplesPerLoop;
+	currentCyclePos += bufferToFill.numSamples;
+	if (currentCyclePos >= samplesPerLoop)
+	  {
+		currentCyclePos -= samplesPerLoop;
+		if (currentPhase==1)
+		  currentPhase = 2;
+		else
+		  {
+			currentPhase = 1;
+			std::cout << "Number of events in guessBuffer: " << guessBuffer.getNumEvents() << "\n";
+			guessBuffer.clear();
+		  }
+	  }
   }
+    
   juce::MidiMessageCollector* getMidiCollector()
   {
 	return &midiCollector;
@@ -239,8 +262,9 @@ private:
   juce::MidiKeyboardState& keyboardState;
   juce::Synthesiser synth;
   juce::MidiMessageCollector midiCollector;
-  int currentCycle = 0;
-  juce::MidiBuffer rythmSectionBuffer, phraseBuffer, userInputBuffer;
+  int currentCyclePos = 0, currentPhase = 1; // currentPhase = 0 for none, 1 for computer playing phrase, 2 for listening to user input
+  // TODO: constants or macro for these values
+  juce::MidiBuffer rythmSectionBuffer, phraseBuffer, guessBuffer;
   int samplesPerLoop;
 };
 
