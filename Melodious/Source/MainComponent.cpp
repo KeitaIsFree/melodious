@@ -4,7 +4,7 @@
 //==============================================================================
 MainComponent::MainComponent()
   : synthAudioSource (keyboardState),
-	keyboardComponent (keyboardState, juce::MidiKeyboardComponent::horizontalKeyboard),
+	keyboardComponent (keyboardState, juce::MidiKeyboardComponent::verticalKeyboardFacingLeft),
 	audioSetupComp (deviceManager,
 					0,     // minimum input channels
 					256,   // maximum input channels
@@ -21,7 +21,7 @@ MainComponent::MainComponent()
   addAndMakeVisible (audioSetupComp);
   // Make sure you set the size of the component after
   // you add any child components.
-  setSize (800, 600);
+  setSize (1920, 1080);
 
   // Some platforms require permissions to open input channels so request that here
   // if (juce::RuntimePermissions::isRequired (juce::RuntimePermissions::recordAudio)
@@ -38,7 +38,7 @@ MainComponent::MainComponent()
   
   setAudioChannels (0, 2);
 
-  startTimer (400);
+  startTimerHz (60);
   addAndMakeVisible (midiInputListLabel);
 	midiInputListLabel.setText ("MIDI Input:", juce::dontSendNotification);
 	midiInputListLabel.attachToComponent (&midiInputList, true);
@@ -131,13 +131,30 @@ void MainComponent::paint (juce::Graphics& g)
   g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
 
   // You can add your drawing code here!
+  juce::Path spinePath;
+  int numberOfDots = 15;
+  for (auto i = 0; i < numberOfDots; ++i) // [3]
+        {
+            int radius = 150;
+ 
+            juce::Point<float> p ((float) getWidth()  / 2.0f + 1.0f * (float) radius * std::sin ((float) timerCounter * 0.04f + (float) i * 0.12f),
+                                  (float) getHeight() / 2.0f + 1.0f * (float) radius * std::cos ((float) timerCounter * 0.04f + (float) i * 0.12f));
+ 
+            if (i == 0)
+                spinePath.startNewSubPath (p);  // if this is the first point, start a new path..
+            else
+                spinePath.lineTo (p);           // ...otherwise add the next point
+        }
+  g.strokePath (spinePath, juce::PathStrokeType (4.0f)); // [4]
+  
 }
 
 void MainComponent::timerCallback()
 {
-  // Animation update here
   keyboardComponent.grabKeyboardFocus();
-  stopTimer();
+  // Animation update here
+  timerCounter++;
+  repaint();
 }
 
 void MainComponent::resized()
@@ -149,5 +166,8 @@ void MainComponent::resized()
   auto rect = getLocalBounds();
   audioSetupComp.setBounds (rect.removeFromLeft (proportionOfWidth (0.6f)));
   midiInputList    .setBounds (200, 10, getWidth() - 210, 20);
-  keyboardComponent.setBounds (10, 10, getWidth() - 20, getHeight() - 20);
+  keyboardComponent.setKeyWidth ((float) getHeight() / (float) 52);
+  keyboardComponent.setLowestVisibleKey (21);
+  keyboardComponent.setAvailableRange (21, 108);
+  keyboardComponent.setBounds (0, 0, 100, getHeight());
 }

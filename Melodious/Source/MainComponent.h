@@ -265,15 +265,15 @@ public:
 		notesGotRight++;
 	  notesInTotal++;
 	}
-	std::cout << "You got " << notesGotRight << " out of "<< notesInTotal << " notes right this loop.\n";
+	// std::cout << "You got " << notesGotRight << " out of "<< notesInTotal << " notes right this loop.\n";
   }
 
   void prepareToPlay (int /*samplesPerBlockExpected*/, double sampleRate) override
   {
 	synth.setCurrentPlaybackSampleRate (sampleRate); // [3]
 	midiCollector.reset (sampleRate);
-	setupRythmSection (sampleRate*5);
-	setupPhrase();
+	// setupRythmSection (sampleRate*5);
+	// setupPhrase();
   }
 
   void releaseResources() override {}
@@ -376,6 +376,7 @@ private:
   juce::Label midiInputListLabel;
   int lastInputIndex = 0;
   juce::AudioDeviceSelectorComponent audioSetupComp;
+  int timerCounter = 0;
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };
