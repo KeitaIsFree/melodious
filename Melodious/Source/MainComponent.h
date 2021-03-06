@@ -146,6 +146,7 @@ public:
   }
 
   void setupPhrase () {
+	phraseBuffer.clear();
 	auto one12thNote = std::floor(samplesPerLoop / 12 / 2);
 	phraseBuffer.addEvent (juce::MidiMessage::noteOn (1, 67, 1.0f), 0);
 	phraseBuffer.addEvent (juce::MidiMessage::noteOff (1, 67), one12thNote * 2 - 1);
@@ -164,6 +165,7 @@ public:
   }
   
   void setupRythmSection (double spl) {
+    rythmSectionBuffer.clear();
 	samplesPerLoop = spl;
 	for (int i = 0; i < 2; i++) {
 	  // rythmSectionBuffer.addEvent(juce::MidiMessage::noteOn(0, 53, 1.0f), i*samplesPerLoop);
@@ -201,8 +203,9 @@ public:
 
   void evaluateGuess()
   {
-	int samplesGotRight = 0;
-	int samplesInPhrase = 0;
+	// int samplesGotRight = 0;
+	// int samplesInPhrase = 0;
+	int notesGotRight = 0, notesInTotal = 0;
 	juce::MidiBufferIterator phraseIterator = phraseBuffer.begin();
 	for (auto currentMidiMessageMetadata : phraseBuffer) {
 	  auto currentMidiEvent = (*phraseIterator).getMessage();
@@ -213,10 +216,11 @@ public:
 		: 0;
 	  auto noteFrom = currentMidiEvent.getTimeStamp();
 	  auto noteTo = (*(++phraseIterator)).getMessage().getTimeStamp();
-	  std::cout << "Note duration is from " << noteFrom << " to " << noteTo << "\n";
+	  // std::cout << "Note duration is from " << noteFrom << " to " << noteTo << "\n";
 	  if (correctNote == 0)
 		continue;
-	  samplesInPhrase += noteTo - noteFrom;
+	  // samplesInPhrase += noteTo - noteFrom;
+	  int samplesGotRight = 0;
 	  auto guessIterator = guessBuffer.findNextSamplePosition (noteFrom);
 	  for (auto currentGuessMidiMessageMetadata : guessBuffer) {
 		auto currentGuessMidiEvent = (*guessIterator).getMessage();
@@ -231,6 +235,9 @@ public:
 		}
 		// TODO: handle events other than noteOn/noteOff
 		auto nextGuessMidiEvent = (*(++guessIterator)).getMessage();
+		while (!nextGuessMidiEvent.isNoteOn()
+			   && nextGuessMidiEvent.getNoteNumber() != correctNote)
+		  nextGuessMidiEvent = (*(++guessIterator)).getMessage();		  
 		// std::cout << "Note duration is from " << currentGuessMidiEvent.getTimeStamp() << " to " << nextGuessMidiEvent.getTimeStamp() << "\n";
 		if (nextGuessMidiEvent.isNoteOff()) {
 		  if (noteTo > nextGuessMidiEvent.getTimeStamp()) {
@@ -252,8 +259,13 @@ public:
 		}
 			
 	  }
+	  std::cout << "Note: " << currentMidiEvent.getDescription() << "\n";
+	  std::cout << (float) samplesGotRight / (float) (noteTo - noteFrom) << "\n";
+	  if ((float) samplesGotRight / (float) (noteTo - noteFrom) > 0.4)
+		notesGotRight++;
+	  notesInTotal++;
 	}
-	std::cout << "You got " << samplesGotRight << " out of "<< samplesInPhrase << " samples right this loop. (" << 100*samplesGotRight/samplesInPhrase << "%)\n";
+	std::cout << "You got " << notesGotRight << " out of "<< notesInTotal << " notes right this loop.\n";
   }
 
   void prepareToPlay (int /*samplesPerBlockExpected*/, double sampleRate) override
