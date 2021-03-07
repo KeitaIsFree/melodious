@@ -38,33 +38,35 @@ MainComponent::MainComponent()
   
   setAudioChannels (0, 2);
 
-  startTimerHz (60);
+  secondsPerLoop = 5;
+
+  startTimerHz (10);
   addAndMakeVisible (midiInputListLabel);
-	midiInputListLabel.setText ("MIDI Input:", juce::dontSendNotification);
-	midiInputListLabel.attachToComponent (&midiInputList, true);
+  midiInputListLabel.setText ("MIDI Input:", juce::dontSendNotification);
+  midiInputListLabel.attachToComponent (&midiInputList, true);
  
-	auto midiInputs = juce::MidiInput::getAvailableDevices();
-	addAndMakeVisible (midiInputList);
-	midiInputList.setTextWhenNoChoicesAvailable ("No MIDI Inputs Enabled");
+  auto midiInputs = juce::MidiInput::getAvailableDevices();
+  addAndMakeVisible (midiInputList);
+  midiInputList.setTextWhenNoChoicesAvailable ("No MIDI Inputs Enabled");
  
-	juce::StringArray midiInputNames;
-	for (auto input : midiInputs)
-	  midiInputNames.add (input.name);
+  juce::StringArray midiInputNames;
+  for (auto input : midiInputs)
+	midiInputNames.add (input.name);
  
-	midiInputList.addItemList (midiInputNames, 1);
-	midiInputList.onChange = [this] { setMidiInput (midiInputList.getSelectedItemIndex()); };
+  midiInputList.addItemList (midiInputNames, 1);
+  midiInputList.onChange = [this] { setMidiInput (midiInputList.getSelectedItemIndex()); };
  
-	for (auto input : midiInputs)
-	  {
-		if (deviceManager.isMidiInputDeviceEnabled (input.identifier))
-		  {
-			setMidiInput (midiInputs.indexOf (input));
-			break;
-		  }
-	  }
+  for (auto input : midiInputs)
+	{
+	  if (deviceManager.isMidiInputDeviceEnabled (input.identifier))
+		{
+		  setMidiInput (midiInputs.indexOf (input));
+		  break;
+		}
+	}
  
-	if (midiInputList.getSelectedId() == 0)
-	  setMidiInput (0);
+  if (midiInputList.getSelectedId() == 0)
+	setMidiInput (0);
   
 }
 
@@ -101,7 +103,14 @@ void MainComponent::prepareToPlay (int samplesPerBlockExpected, double sampleRat
   // but be careful - it will be called on the audio thread, not the GUI thread.
 
   // For more details, see the help for AudioProcessor::prepareToPlay()
+  std::cout << "sampleRate: " << sampleRate << ", secondsPerLoop: " << secondsPerLoop << "\n";
+  // for some reason, secondsPerLoop is 0 when accessed from here
+  secondsPerLoop = 5;
+  synthAudioSource.setupSamplesPerLoop (sampleRate * secondsPerLoop);
   synthAudioSource.prepareToPlay (samplesPerBlockExpected, sampleRate);
+
+  
+  keyboardComponent.grabKeyboardFocus();
 }
 
 void MainComponent::getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferToFill)
@@ -132,29 +141,30 @@ void MainComponent::paint (juce::Graphics& g)
 
   // You can add your drawing code here!
   juce::Path spinePath;
-  int numberOfDots = 15;
+  int numberOfDots = 60;
   for (auto i = 0; i < numberOfDots; ++i) // [3]
-        {
-            int radius = 150;
+	{
+	  int radius = 150;
  
-            juce::Point<float> p ((float) getWidth()  / 2.0f + 1.0f * (float) radius * std::sin ((float) timerCounter * 0.04f + (float) i * 0.12f),
-                                  (float) getHeight() / 2.0f + 1.0f * (float) radius * std::cos ((float) timerCounter * 0.04f + (float) i * 0.12f));
+	  juce::Point<float> p ((float) getWidth()  / 2.0f + 1.0f * (float) radius * std::sin ((float) (timerCounter % (10*secondsPerLoop)) / 10.0f / (float) secondsPerLoop * juce::MathConstants<float>::twoPi * i / numberOfDots),
+							(float) getHeight() / 2.0f + 1.0f * (float) radius * std::cos ((float) (timerCounter % (10*secondsPerLoop)) / 10.0f / (float) secondsPerLoop * juce::MathConstants<float>::twoPi * i / numberOfDots));
  
-            if (i == 0)
-                spinePath.startNewSubPath (p);  // if this is the first point, start a new path..
-            else
-                spinePath.lineTo (p);           // ...otherwise add the next point
-        }
+	  if (i == 0)
+		spinePath.startNewSubPath (p);  // if this is the first point, start a new path..
+	  else
+		spinePath.lineTo (p);           // ...otherwise add the next point
+	}
   g.strokePath (spinePath, juce::PathStrokeType (4.0f)); // [4]
   
 }
 
 void MainComponent::timerCallback()
 {
-  keyboardComponent.grabKeyboardFocus();
   // Animation update here
   timerCounter++;
   repaint();
+  std::cout << "timerCounter: " << timerCounter << "\n";
+  std::cout << "angleInLoop: " << (float) timerCounter / 60.0f / (float) secondsPerLoop * juce::MathConstants<float>::twoPi << "\n";
 }
 
 void MainComponent::resized()

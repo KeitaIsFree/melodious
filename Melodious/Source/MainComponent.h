@@ -127,6 +127,11 @@ public:
   {
 	synth.clearSounds();
   }
+
+  void setupSamplesPerLoop (int spl) {
+	std::cout << "Setting up samples per loop: " << spl << "\n";
+	samplesPerLoop = spl;
+  }
   
   void createWavetable()
   {
@@ -164,9 +169,8 @@ public:
 	phraseBuffer.addEvent (juce::MidiMessage::noteOff (1, 67), one12thNote *12 - 1);
   }
   
-  void setupRythmSection (double spl) {
+  void setupRythmSection () {
     rythmSectionBuffer.clear();
-	samplesPerLoop = spl;
 	for (int i = 0; i < 2; i++) {
 	  // rythmSectionBuffer.addEvent(juce::MidiMessage::noteOn(0, 53, 1.0f), i*samplesPerLoop);
 	  // rythmSectionBuffer.addEvent(juce::MidiMessage::noteOff(0, 53), std::floor(samplesPerLoop/4) + i*samplesPerLoop);
@@ -259,8 +263,8 @@ public:
 		}
 			
 	  }
-	  std::cout << "Note: " << currentMidiEvent.getDescription() << "\n";
-	  std::cout << (float) samplesGotRight / (float) (noteTo - noteFrom) << "\n";
+	  // std::cout << "Note: " << currentMidiEvent.getDescription() << "\n";
+	  // std::cout << (float) samplesGotRight / (float) (noteTo - noteFrom) << "\n";
 	  if ((float) samplesGotRight / (float) (noteTo - noteFrom) > 0.4)
 		notesGotRight++;
 	  notesInTotal++;
@@ -272,8 +276,8 @@ public:
   {
 	synth.setCurrentPlaybackSampleRate (sampleRate); // [3]
 	midiCollector.reset (sampleRate);
-	// setupRythmSection (sampleRate*5);
-	// setupPhrase();
+  	setupRythmSection ();
+  	setupPhrase();
   }
 
   void releaseResources() override {}
@@ -377,6 +381,7 @@ private:
   int lastInputIndex = 0;
   juce::AudioDeviceSelectorComponent audioSetupComp;
   int timerCounter = 0;
+  int secondsPerLoop;
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };
