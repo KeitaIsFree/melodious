@@ -383,7 +383,10 @@ private:
   int lastInputIndex = 0;
   juce::AudioDeviceSelectorComponent audioSetupComp;
   int timerCounter = 0;
+  int timerHz = 60;
+  double progressInLoop = 0.0;
   int secondsPerLoop;
+  juce::ProgressBar loopProgressBar;
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };

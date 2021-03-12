@@ -13,11 +13,18 @@ MainComponent::MainComponent()
 					false, // ability to select midi inputs
 					false, // ability to select midi output device
 					false, // treat channels as stereo pairs
-					false) // hide advanced options
+					false), // hide advanced options
+	loopProgressBar (progressInLoop)
 {
   addAndMakeVisible (bgImage);
 
   addAndMakeVisible (keyboardComponent);
+
+  loopProgressBar.setColour (juce::ProgressBar::ColourIds::foregroundColourId,
+							 juce::Colour (255, 118, 118));
+  loopProgressBar.setPercentageDisplay (false);
+
+  addAndMakeVisible (loopProgressBar);
 
   // addAndMakeVisible (audioSetupComp);
 
@@ -25,26 +32,13 @@ MainComponent::MainComponent()
   // you add any child components.
   setSize (1920, 1080);
 
-  // Some platforms require permissions to open input channels so request that here
-  // if (juce::RuntimePermissions::isRequired (juce::RuntimePermissions::recordAudio)
-  // 	  && ! juce::RuntimePermissions::isGranted (juce::RuntimePermissions::recordAudio))
-  //   {
-  // 	  juce::RuntimePermissions::request (juce::RuntimePermissions::recordAudio,
-  // 										 [&] (bool granted) { setAudioChannels (granted ? 2 : 0, 2); });
-  //   }
-  // else
-  //   {
-  // 	  // Specify the number of input and output channels that we want to open
-  // 	  setAudioChannels (2, 2);
-  //   }
-
   loadBgImage();
   
   setAudioChannels (0, 2);
 
   secondsPerLoop = 5;
 
-  startTimerHz (10);
+  startTimerHz (timerHz);
   // addAndMakeVisible (midiInputListLabel);
   midiInputListLabel.setText ("MIDI Input:", juce::dontSendNotification);
   midiInputListLabel.attachToComponent (&midiInputList, true);
@@ -129,7 +123,8 @@ void MainComponent::prepareToPlay (int samplesPerBlockExpected, double sampleRat
   synthAudioSource.prepareToPlay (samplesPerBlockExpected, sampleRate);
 
   
-  keyboardComponent.grabKeyboardFocus();
+  Timer::callAfterDelay (400,
+						[&] () { keyboardComponent.grabKeyboardFocus(); });
 }
 
 void MainComponent::getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferToFill)
@@ -158,32 +153,34 @@ void MainComponent::paint (juce::Graphics& g)
   // (Our component is opaque, so we must completely fill the background with a solid colour)
   g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
 
-  // You can add your drawing code here!
-  juce::Path spinePath;
-  int numberOfDots = 60;
-  for (auto i = 0; i < numberOfDots; ++i) // [3]
-	{
-	  int radius = 150;
- 
-	  juce::Point<float> p ((float) getWidth()  / 2.0f + 1.0f * (float) radius * std::sin ((float) (timerCounter % (10*secondsPerLoop)) / 10.0f / (float) secondsPerLoop * juce::MathConstants<float>::twoPi * i / numberOfDots),
-							(float) getHeight() / 2.0f + 1.0f * (float) radius * std::cos ((float) (timerCounter % (10*secondsPerLoop)) / 10.0f / (float) secondsPerLoop * juce::MathConstants<float>::twoPi * i / numberOfDots));
- 
-	  if (i == 0)
-		spinePath.startNewSubPath (p);  // if this is the first point, start a new path..
-	  else
-		spinePath.lineTo (p);           // ...otherwise add the next point
-	}
-  g.strokePath (spinePath, juce::PathStrokeType (4.0f)); // [4]
-  
 }
 
 void MainComponent::timerCallback()
 {
   // Animation update here
   timerCounter++;
-  repaint();
-  std::cout << "timerCounter: " << timerCounter << "\n";
-  std::cout << "angleInLoop: " << (float) timerCounter / 60.0f / (float) secondsPerLoop * juce::MathConstants<float>::twoPi << "\n";
+  progressInLoop = (float) (timerCounter % (timerHz * secondsPerLoop)) / (float) (timerHz * secondsPerLoop);
+  if (timerCounter % (timerHz * secondsPerLoop) == 0)
+	{
+	  std::cout << "Changing progress bar color... " << "\n";
+	  std::cout << "timerCounter is " << timerCounter << " and timerHz*secondPerLoop is " << timerHz*secondsPerLoop << " and timerCounter % (timerHz * secondsPerLoop) is " << timerCounter % (timerHz * secondsPerLoop) << "\n";
+	  std::cout << "timerCounter % (timerHz * secondsPerLoop * 2) is " << timerCounter % (timerHz * secondsPerLoop * 2) << "\n";
+	  std::cout << ((timerCounter % (timerHz * secondsPerLoop * 2)) > timerHz * secondsPerLoop) << "\n";
+	  if ((timerCounter % (timerHz * secondsPerLoop * 2)) == timerHz * secondsPerLoop)
+		{
+		  loopProgressBar.setColour (juce::ProgressBar::ColourIds::foregroundColourId,
+									 juce::Colour (20, 255, 0));
+		}
+	  else
+		{
+		  loopProgressBar.setColour (juce::ProgressBar::ColourIds::foregroundColourId,
+									 juce::Colour (255, 118, 118));
+		}
+	}
+  
+	
+  // std::cout << "timerCounter: " << timerCounter << "\n";
+  // std::cout << "angleInLoop: " << (float) timerCounter / 60.0f / (float) secondsPerLoop * juce::MathConstants<float>::twoPi << "\n";
 }
 
 void MainComponent::resized()
@@ -200,4 +197,5 @@ void MainComponent::resized()
   keyboardComponent.setLowestVisibleKey (21);
   keyboardComponent.setAvailableRange (21, 108);
   keyboardComponent.setBounds (0, 0, 100, getHeight());
+  loopProgressBar.setBounds(0, getHeight()-20, getWidth(), 20);
 }
