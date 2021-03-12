@@ -15,10 +15,12 @@ MainComponent::MainComponent()
 					false, // treat channels as stereo pairs
 					false) // hide advanced options
 {
+  addAndMakeVisible (bgImage);
 
   addAndMakeVisible (keyboardComponent);
 
-  addAndMakeVisible (audioSetupComp);
+  // addAndMakeVisible (audioSetupComp);
+
   // Make sure you set the size of the component after
   // you add any child components.
   setSize (1920, 1080);
@@ -35,18 +37,20 @@ MainComponent::MainComponent()
   // 	  // Specify the number of input and output channels that we want to open
   // 	  setAudioChannels (2, 2);
   //   }
+
+  loadBgImage();
   
   setAudioChannels (0, 2);
 
   secondsPerLoop = 5;
 
   startTimerHz (10);
-  addAndMakeVisible (midiInputListLabel);
+  // addAndMakeVisible (midiInputListLabel);
   midiInputListLabel.setText ("MIDI Input:", juce::dontSendNotification);
   midiInputListLabel.attachToComponent (&midiInputList, true);
  
   auto midiInputs = juce::MidiInput::getAvailableDevices();
-  addAndMakeVisible (midiInputList);
+  // addAndMakeVisible (midiInputList);
   midiInputList.setTextWhenNoChoicesAvailable ("No MIDI Inputs Enabled");
  
   juce::StringArray midiInputNames;
@@ -91,6 +95,21 @@ void MainComponent::setMidiInput (int index)
   midiInputList.setSelectedId (index + 1, juce::dontSendNotification);
  
   lastInputIndex = index;
+}
+
+void MainComponent::loadBgImage()
+{
+  const auto bgImageFile = juce::File ("/home/roy/Code/melodious/Melodious/Source/res/houses.png");
+  if (bgImageFile.exists())
+	{
+	  juce::FileInputStream inputStreamRef (bgImageFile);
+	  if (inputStreamRef.openedOk())
+		bgImage.setImage (juce::PNGImageFormat::loadFrom (inputStreamRef), juce::RectanglePlacement (128));
+	  else
+		std::cout << "ERROR: Problem opening input stream for background image";
+	}
+  else
+	std::cout << "ERROR: Background image file does not exist\n";
 }
 
 //==============================================================================
@@ -173,6 +192,7 @@ void MainComponent::resized()
   // If you add any child components, this is where you should
   // update their positions.auto rect = getLocalBounds();
 
+  bgImage.setBounds (0, 0, getWidth(), getHeight());
   auto rect = getLocalBounds();
   audioSetupComp.setBounds (rect.removeFromLeft (proportionOfWidth (0.6f)));
   midiInputList    .setBounds (200, 10, getWidth() - 210, 20);

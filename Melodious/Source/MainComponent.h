@@ -362,6 +362,7 @@ public:
   void getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferToFill) override;
   void releaseResources() override;
   void setMidiInput (int);
+  void loadBgImage();
 
   //==============================================================================
   void paint (juce::Graphics& g) override;
@@ -378,6 +379,7 @@ private:
 
   juce::ComboBox midiInputList;
   juce::Label midiInputListLabel;
+  juce::ImageComponent bgImage;
   int lastInputIndex = 0;
   juce::AudioDeviceSelectorComponent audioSetupComp;
   int timerCounter = 0;
