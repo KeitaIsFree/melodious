@@ -162,25 +162,14 @@ void MainComponent::timerCallback()
   progressInLoop = (float) (timerCounter % (timerHz * secondsPerLoop)) / (float) (timerHz * secondsPerLoop);
   if (timerCounter % (timerHz * secondsPerLoop) == 0)
 	{
-	  std::cout << "Changing progress bar color... " << "\n";
-	  std::cout << "timerCounter is " << timerCounter << " and timerHz*secondPerLoop is " << timerHz*secondsPerLoop << " and timerCounter % (timerHz * secondsPerLoop) is " << timerCounter % (timerHz * secondsPerLoop) << "\n";
-	  std::cout << "timerCounter % (timerHz * secondsPerLoop * 2) is " << timerCounter % (timerHz * secondsPerLoop * 2) << "\n";
-	  std::cout << ((timerCounter % (timerHz * secondsPerLoop * 2)) > timerHz * secondsPerLoop) << "\n";
 	  if ((timerCounter % (timerHz * secondsPerLoop * 2)) == timerHz * secondsPerLoop)
-		{
-		  loopProgressBar.setColour (juce::ProgressBar::ColourIds::foregroundColourId,
-									 juce::Colour (20, 255, 0));
-		}
+		loopProgressBar.setColour (juce::ProgressBar::ColourIds::foregroundColourId,
+								   juce::Colour (20, 255, 0));
 	  else
-		{
-		  loopProgressBar.setColour (juce::ProgressBar::ColourIds::foregroundColourId,
-									 juce::Colour (255, 118, 118));
-		}
+		loopProgressBar.setColour (juce::ProgressBar::ColourIds::foregroundColourId,
+								   juce::Colour (255, 118, 118));
 	}
   
-	
-  // std::cout << "timerCounter: " << timerCounter << "\n";
-  // std::cout << "angleInLoop: " << (float) timerCounter / 60.0f / (float) secondsPerLoop * juce::MathConstants<float>::twoPi << "\n";
 }
 
 void MainComponent::resized()
