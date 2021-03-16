@@ -108,6 +108,42 @@ private:
   float currentIndex = 0.0f, tableDelta = 0.0f;
 };
 
+class CircularProgressBarLaF : public juce::LookAndFeel_V4
+{
+public:
+  CircularProgressBarLaF (float elv = 0.6f)
+	: elevation (elv) {}
+
+  void drawProgressBar (juce::Graphics& g, juce::ProgressBar& progressBar, int width, int height, double progress, const juce::String&) override
+  {
+	const juce::Colour background (progressBar.findColour (juce::ProgressBar::backgroundColourId));
+	const juce::Colour foreground (progressBar.findColour (juce::ProgressBar::foregroundColourId));
+	
+	auto barBounds = progressBar.getLocalBounds();
+	juce::Path inner;
+	inner.addCentredArc (barBounds.getCentreX(),
+						 barBounds.getCentreY(),
+						 barBounds.getWidth() * 0.5f * elevation,
+						 barBounds.getHeight() * 0.5f * elevation,
+						 0.0f, 0.0f, juce::MathConstants<float>::twoPi, true);
+	g.setColour (background);
+	g.strokePath (inner, juce::PathStrokeType (barBounds.getWidth() / 5));
+	juce::Path outer;
+	outer.addCentredArc (barBounds.getCentreX(),
+					 barBounds.getCentreY(),
+					 barBounds.getWidth() * 2.0f / 5.0f,
+					 barBounds.getHeight() * 2.0f / 5.0f,
+					 0.0f,
+					 0.0f,
+					 juce::MathConstants<float>::twoPi * progress,
+					 true);
+	g.setColour (foreground);
+	g.strokePath (outer, juce::PathStrokeType (barBounds.getWidth() / 5));
+  }
+  private:
+	  float elevation;
+};
+
 //==============================================================================
 class LooperAudioSource   : public juce::AudioSource
 {
@@ -387,6 +423,7 @@ private:
   double progressInLoop = 0.0;
   int secondsPerLoop;
   juce::ProgressBar loopProgressBar;
+  CircularProgressBarLaF progressBarLaF;
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };

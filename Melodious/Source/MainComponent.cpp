@@ -20,8 +20,12 @@ MainComponent::MainComponent()
 
   addAndMakeVisible (keyboardComponent);
 
+  loopProgressBar.setLookAndFeel (&progressBarLaF);
+
   loopProgressBar.setColour (juce::ProgressBar::ColourIds::foregroundColourId,
 							 juce::Colour (255, 118, 118));
+  loopProgressBar.setColour (juce::ProgressBar::ColourIds::backgroundColourId,
+							 juce::Colour (84, 84, 84));
   loopProgressBar.setPercentageDisplay (false);
 
   addAndMakeVisible (loopProgressBar);
@@ -186,5 +190,6 @@ void MainComponent::resized()
   keyboardComponent.setLowestVisibleKey (21);
   keyboardComponent.setAvailableRange (21, 108);
   keyboardComponent.setBounds (0, 0, 100, getHeight());
-  loopProgressBar.setBounds(0, getHeight()-20, getWidth(), 20);
+  loopProgressBar.setBounds(getWidth() - 100, getHeight() - 100, 80, 80);
 }
+
