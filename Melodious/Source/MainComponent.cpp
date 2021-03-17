@@ -122,6 +122,18 @@ void CircularProgressBarLaF::drawProgressBar (juce::Graphics& g, juce::ProgressB
   g.strokePath (outer, juce::PathStrokeType (barBounds.getWidth() / 5));
 }
 
+//============================================================================
+
+void TitleBeltComponent::paint (juce::Graphics& g)
+{
+  g.fillAll (juce::Colour (0, 71, 87));
+  g.setColour (juce::Colours::white);
+  g.drawLine (8, 12, getWidth() - 8, 12, 8);
+  g.drawLine (8, getHeight() - 12, getWidth() - 8,  getHeight() - 12, 8);
+  g.setFont (96);
+  g.drawText (titleString, 8, 12, getWidth() - 8, getHeight() - 12, juce::Justification::Flags::left);
+}
+
 //----------------------------------------------------------------------------
 LooperAudioSource::LooperAudioSource (juce::MidiKeyboardState& keyState)
   : keyboardState (keyState)
@@ -351,9 +363,12 @@ MainComponent::MainComponent()
 					false, // ability to select midi output device
 					false, // treat channels as stereo pairs
 					false), // hide advanced options
-	loopProgressBar (progressInLoop)
+	loopProgressBar (progressInLoop),
+	chordName ("Cm7b5")
 {
   addAndMakeVisible (bgImage);
+
+  addAndMakeVisible (chordName);
 
   addAndMakeVisible (keyboardComponent);
 
@@ -519,6 +534,7 @@ void MainComponent::resized()
   // If you add any child components, this is where you should
   // update their positions.auto rect = getLocalBounds();
 
+  chordName.setBounds (getWidth() - 400, 100, 400, 128);
   bgImage.setBounds (0, 0, getWidth(), getHeight());
   auto rect = getLocalBounds();
   audioSetupComp.setBounds (rect.removeFromLeft (proportionOfWidth (0.6f)));

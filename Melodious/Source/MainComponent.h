@@ -39,6 +39,22 @@ public:
 };
 
 //==============================================================================
+
+class TitleBeltComponent : public juce::Component
+{
+public:
+  TitleBeltComponent (const juce::String& titleStr, bool align = true)
+	: titleString (titleStr),
+	  alignLeft (align) {}
+  void paint (juce::Graphics&) override;
+  
+private:
+  juce::String titleString;
+  bool alignLeft;
+  JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TitleBeltComponent);
+};
+
+//==============================================================================
 class LooperAudioSource   : public juce::AudioSource
 {
 public:
@@ -113,6 +129,7 @@ private:
   int secondsPerLoop;
   juce::ProgressBar loopProgressBar;
   CircularProgressBarLaF progressBarLaF;
+  TitleBeltComponent chordName;
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };
