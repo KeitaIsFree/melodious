@@ -1,4 +1,5 @@
 #include "MainComponent.h"
+#include <iostream>
 
 //----------------------------------------------------------------------------------------------------
 
@@ -174,22 +175,87 @@ void LooperAudioSource::createWavetable()
 }
 
 void LooperAudioSource::setupPhrase () {
+  
   phraseBuffer.clear();
-  auto one12thNote = std::floor(samplesPerLoop / 12 / 2);
-  phraseBuffer.addEvent (juce::MidiMessage::noteOn (1, 67, 1.0f), 0);
-  phraseBuffer.addEvent (juce::MidiMessage::noteOff (1, 67), one12thNote * 2 - 1);
-  phraseBuffer.addEvent (juce::MidiMessage::noteOn (1, 69, 1.0f), one12thNote * 2);
-  phraseBuffer.addEvent (juce::MidiMessage::noteOff (1, 69), one12thNote * 3 - 1);
-  phraseBuffer.addEvent (juce::MidiMessage::noteOn (1, 70, 1.0f), one12thNote * 3);
-  phraseBuffer.addEvent (juce::MidiMessage::noteOff (1, 70), one12thNote * 5 - 1);
-  phraseBuffer.addEvent (juce::MidiMessage::noteOn (1, 72, 1.0f), one12thNote * 5);
-  phraseBuffer.addEvent (juce::MidiMessage::noteOff (1, 72), one12thNote * 6 - 1);
-  phraseBuffer.addEvent (juce::MidiMessage::noteOn (1, 69, 1.0f), one12thNote * 6);
-  phraseBuffer.addEvent (juce::MidiMessage::noteOff (1, 69), one12thNote * 9 - 1);
-  phraseBuffer.addEvent (juce::MidiMessage::noteOn (1, 65, 1.0f), one12thNote * 9);
-  phraseBuffer.addEvent (juce::MidiMessage::noteOff (1, 65), one12thNote * 11 - 1);
-  phraseBuffer.addEvent (juce::MidiMessage::noteOn (1, 67, 1.0f), one12thNote * 11);
-  phraseBuffer.addEvent (juce::MidiMessage::noteOff (1, 67), one12thNote *12 - 1);
+
+  phraseBuffer.addEvents (phrases[0], 0, -1, 0);
+  
+  // manual event adding
+  // auto one12thNote = std::floor(samplesPerLoop / 12 / 2);
+  // phraseBuffer.addEvent (juce::MidiMessage::noteOn (1, 67, 1.0f), 0);
+  // phraseBuffer.addEvent (juce::MidiMessage::noteOff (1, 67), one12thNote * 2 - 1);
+  // phraseBuffer.addEvent (juce::MidiMessage::noteOn (1, 69, 1.0f), one12thNote * 2);
+  // phraseBuffer.addEvent (juce::MidiMessage::noteOff (1, 69), one12thNote * 3 - 1);
+  // phraseBuffer.addEvent (juce::MidiMessage::noteOn (1, 70, 1.0f), one12thNote * 3);
+  // phraseBuffer.addEvent (juce::MidiMessage::noteOff (1, 70), one12thNote * 5 - 1);
+  // phraseBuffer.addEvent (juce::MidiMessage::noteOn (1, 72, 1.0f), one12thNote * 5);
+  // phraseBuffer.addEvent (juce::MidiMessage::noteOff (1, 72), one12thNote * 6 - 1);
+  // phraseBuffer.addEvent (juce::MidiMessage::noteOn (1, 69, 1.0f), one12thNote * 6);
+  // phraseBuffer.addEvent (juce::MidiMessage::noteOff (1, 69), one12thNote * 9 - 1);
+  // phraseBuffer.addEvent (juce::MidiMessage::noteOn (1, 65, 1.0f), one12thNote * 9);
+  // phraseBuffer.addEvent (juce::MidiMessage::noteOff (1, 65), one12thNote * 11 - 1);
+  // phraseBuffer.addEvent (juce::MidiMessage::noteOn (1, 67, 1.0f), one12thNote * 11);
+  // phraseBuffer.addEvent (juce::MidiMessage::noteOff (1, 67), one12thNote *12 - 1);
+
+  // for testing savephrases() and loadphrases()
+  // phrases[0].addEvents(phraseBuffer, 0, -1, 0);
+}
+
+
+void LooperAudioSource::loadPhrases()
+{
+  const auto phraseFile = juce::File ("/home/roy/Code/melodious/Melodious/Source/res/phrases");
+  if (phraseFile.exists())
+	{
+	  juce::FileInputStream inputStreamRef (phraseFile);
+	  if (inputStreamRef.openedOk())
+		{
+		  juce::MidiFile midiFile;
+		  midiFile.readFrom (inputStreamRef);
+		  for (int i = 0; i < midiFile.getNumTracks(); i++) {
+			const juce::MidiMessageSequence track = *midiFile.getTrack (i);
+			for (int j = 0; j < track.getNumEvents(); j++) {
+			  juce::MidiMessage message = (*track.getEventPointer (j)).message;
+			  phrases[i].addEvent (message, message.getTimeStamp());
+			}
+		  }
+		}
+	  else
+		std::cout << "ERROR: Problem opening input stream for phrase image";
+	}
+  else
+	std::cout << "ERROR: Phrase file does not exist\n";  
+}
+
+void LooperAudioSource::savePhrases()
+{
+  const auto phraseFile = juce::File ("/home/roy/Code/melodious/Melodious/Source/res/phrases");
+  if (phraseFile.exists())
+	{
+	  juce::FileOutputStream outputStreamRef (phraseFile);
+	  outputStreamRef.setPosition (0);
+	  outputStreamRef.truncate();
+	  if (outputStreamRef.openedOk())
+		{		  
+		  juce::MidiFile midiFile;
+		  for (int i = 0; i < 10; i++) {
+			if (phrases[i].isEmpty())
+			  continue;
+			juce::MidiMessageSequence track;
+			// Copying midiEvents from phrases[i] to track
+			for (const juce::MidiMessageMetadata metadata : phrases[i]) {
+			  track.addEvent (metadata.getMessage());
+			}
+			midiFile.addTrack (track);
+		  }
+		  
+		  midiFile.writeTo (outputStreamRef);
+		}
+	  else
+		std::cout << "ERROR: Problem opening input stream for phrase image";
+	}
+  else
+	std::cout << "ERROR: Phrase file does not exist\n";  
 }
   
 void LooperAudioSource::setupRythmSection () {
@@ -300,7 +366,29 @@ void LooperAudioSource::prepareToPlay (int /*samplesPerBlockExpected*/, double s
   synth.setCurrentPlaybackSampleRate (sampleRate); // [3]
   midiCollector.reset (sampleRate);
   setupRythmSection ();
+
+  // auto one12thNote = std::floor(samplesPerLoop / 12 / 2);
+  // phrases[0].addEvent (juce::MidiMessage::noteOn (1, 67, 1.0f), 0);
+  // phrases[0].addEvent (juce::MidiMessage::noteOff (1, 67), one12thNote * 2 - 1);
+  // phrases[0].addEvent (juce::MidiMessage::noteOn (1, 69, 1.0f), one12thNote * 2);
+  // phrases[0].addEvent (juce::MidiMessage::noteOff (1, 69), one12thNote * 3 - 1);
+  // phrases[0].addEvent (juce::MidiMessage::noteOn (1, 70, 1.0f), one12thNote * 3);
+  // phrases[0].addEvent (juce::MidiMessage::noteOff (1, 70), one12thNote * 5 - 1);
+  // phrases[0].addEvent (juce::MidiMessage::noteOn (1, 72, 1.0f), one12thNote * 5);
+  // phrases[0].addEvent (juce::MidiMessage::noteOff (1, 72), one12thNote * 6 - 1);
+  // phrases[0].addEvent (juce::MidiMessage::noteOn (1, 69, 1.0f), one12thNote * 6);
+  // phrases[0].addEvent (juce::MidiMessage::noteOff (1, 69), one12thNote * 9 - 1);
+  // phrases[0].addEvent (juce::MidiMessage::noteOn (1, 65, 1.0f), one12thNote * 9);
+  // phrases[0].addEvent (juce::MidiMessage::noteOff (1, 65), one12thNote * 11 - 1);
+  // phrases[0].addEvent (juce::MidiMessage::noteOn (1, 67, 1.0f), one12thNote * 11);
+  // phrases[0].addEvent (juce::MidiMessage::noteOff (1, 67), one12thNote *12 - 1);
+  // savePhrases();
+  
+  
+  loadPhrases();
+  std::cout << "Number of events in phrases[0]: " << phrases[0].getNumEvents() << "\n";
   setupPhrase();
+  // savePhrases();
 }
 
 void LooperAudioSource::getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferToFill)

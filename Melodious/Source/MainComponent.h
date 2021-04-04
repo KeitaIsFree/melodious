@@ -60,7 +60,9 @@ class LooperAudioSource   : public juce::AudioSource
 public:
   LooperAudioSource (juce::MidiKeyboardState&);
   void setUsingSineWaveSound();
-  void setupSamplesPerLoop (int);  
+  void setupSamplesPerLoop (int);
+  void loadPhrases();
+  void savePhrases();
   void createWavetable();
   void setupPhrase();  
   void setupRythmSection();
@@ -81,6 +83,7 @@ private:
   int currentCyclePos = 0, currentPhase = 1; // currentPhase = 0 for none, 1 for computer playing phrase, 2 for listening to user input
   // TODO: const static members for these values
   juce::MidiBuffer rythmSectionBuffer, phraseBuffer, guessBuffer;
+  juce::MidiBuffer phrases[10];
   int samplesPerLoop;
 };
 
