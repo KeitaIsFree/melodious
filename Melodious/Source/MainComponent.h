@@ -67,6 +67,7 @@ public:
   void setupPhrase();  
   void setupRythmSection();
   void evaluateGuess();
+  void generateNextPhrase();
   void prepareToPlay (int, double) override;  
   void releaseResources() override {}
   void getNextAudioBlock (const juce::AudioSourceChannelInfo&) override;    
@@ -84,6 +85,7 @@ private:
   // TODO: const static members for these values
   juce::MidiBuffer rythmSectionBuffer, phraseBuffer, guessBuffer;
   juce::MidiBuffer phrases[10];
+  juce::Random random;
   int samplesPerLoop;
 };
 

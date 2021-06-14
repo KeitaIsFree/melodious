@@ -358,7 +358,21 @@ void LooperAudioSource::evaluateGuess()
 	  notesGotRight++;
 	notesInTotal++;
   }
-  // std::cout << "You got " << notesGotRight << " out of "<< notesInTotal << " notes right this loop.\n";
+  std::cout << "You got " << notesGotRight << " out of "<< notesInTotal << " notes right this loop.\n";
+}
+
+void LooperAudioSource::generateNextPhrase() {
+  phraseBuffer.clear();
+
+  int diatonic[7] = {0, 2, 4, 5, 7, 9, 11};
+  // int first = random.nextInt(12) + 60;
+  int first = 60;
+  
+  for (int i = 0; i < 4; i++) {
+	int n = diatonic[random.nextInt(7)] + first;
+	phraseBuffer.addEvent(juce::MidiMessage::noteOn(1, n, 1.0f), i * samplesPerLoop / 8 + 400);
+	phraseBuffer.addEvent(juce::MidiMessage::noteOff(1, n), (i + 1) * samplesPerLoop / 8 - 1);
+  }
 }
 
 void LooperAudioSource::prepareToPlay (int /*samplesPerBlockExpected*/, double sampleRate)
@@ -427,6 +441,7 @@ void LooperAudioSource::getNextAudioBlock (const juce::AudioSourceChannelInfo& b
 		{
 		  currentPhase = 1;
 		  evaluateGuess();
+		  generateNextPhrase();
 		  guessBuffer.clear();
 		}
 	}
@@ -470,7 +485,7 @@ MainComponent::MainComponent()
 
   addAndMakeVisible (loopProgressBar);
 
-  // addAndMakeVisible (audioSetupComp);
+  addAndMakeVisible (audioSetupComp);
 
   // Make sure you set the size of the component after
   // you add any child components.
@@ -483,12 +498,12 @@ MainComponent::MainComponent()
   secondsPerLoop = 5;
 
   startTimerHz (timerHz);
-  // addAndMakeVisible (midiInputListLabel);
+  addAndMakeVisible (midiInputListLabel);
   midiInputListLabel.setText ("MIDI Input:", juce::dontSendNotification);
   midiInputListLabel.attachToComponent (&midiInputList, true);
  
   auto midiInputs = juce::MidiInput::getAvailableDevices();
-  // addAndMakeVisible (midiInputList);
+  addAndMakeVisible (midiInputList);
   midiInputList.setTextWhenNoChoicesAvailable ("No MIDI Inputs Enabled");
  
   juce::StringArray midiInputNames;
