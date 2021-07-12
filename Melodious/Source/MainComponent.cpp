@@ -319,12 +319,17 @@ void LooperAudioSource::evaluateGuess()
 	  auto currentGuessMidiEvent = (*guessIterator).getMessage();
 	  // std::cout << "currentGuessMidiEvent: " << currentGuessMidiEvent.getDescription() <<"\n";
 	  if (noteTo < currentGuessMidiEvent.getTimeStamp()) {
+		if (currentGuessMidiEvent.getNoteNumber() == correctNote)
+		  samplesGotRight += noteTo - noteFrom;
 		break;
 	  }
-	  if (!currentGuessMidiEvent.isNoteOn()
-		  || currentGuessMidiEvent.getNoteNumber() != correctNote) {
+	  if (currentGuessMidiEvent.getNoteNumber() != correctNote) {
 		++guessIterator;
 		continue;
+	  }
+	  if (currentGuessMidiEvent.isNoteOff()
+		  && currentGuessMidiEvent.getNoteNumber() == correctNote) {
+		samplesGotRight += currentGuessMidiEvent.getTimeStamp() - noteFrom;
 	  }
 	  // TODO: handle events other than noteOn/noteOff
 	  auto nextGuessMidiEvent = (*(++guessIterator)).getMessage();
@@ -352,13 +357,16 @@ void LooperAudioSource::evaluateGuess()
 	  }
 			
 	}
-	// std::cout << "Note: " << currentMidiEvent.getDescription() << "\n";
-	// std::cout << (float) samplesGotRight / (float) (noteTo - noteFrom) << "\n";
-	if ((float) samplesGotRight / (float) (noteTo - noteFrom) > 0.4)
+	std::cout << "Note: " << currentMidiEvent.getDescription() << "\n";
+	std::cout << (float) samplesGotRight / (float) (noteTo - noteFrom) << "\n";
+	if ((float) samplesGotRight / (float) (noteTo - noteFrom) > 0.3) 
 	  notesGotRight++;
 	notesInTotal++;
   }
   std::cout << "You got " << notesGotRight << " out of "<< notesInTotal << " notes right this loop.\n";
+
+  if (notesGotRight == notesInTotal)
+	generateNextPhrase();
 }
 
 void LooperAudioSource::generateNextPhrase() {
@@ -403,6 +411,7 @@ void LooperAudioSource::prepareToPlay (int /*samplesPerBlockExpected*/, double s
   std::cout << "Number of events in phrases[0]: " << phrases[0].getNumEvents() << "\n";
   setupPhrase();
   // savePhrases();
+  generateNextPhrase();
 }
 
 void LooperAudioSource::getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferToFill)
@@ -441,7 +450,7 @@ void LooperAudioSource::getNextAudioBlock (const juce::AudioSourceChannelInfo& b
 		{
 		  currentPhase = 1;
 		  evaluateGuess();
-		  generateNextPhrase();
+		  // generateNextPhrase();
 		  guessBuffer.clear();
 		}
 	}
